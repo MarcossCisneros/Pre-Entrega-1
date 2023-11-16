@@ -1,6 +1,6 @@
 class Product {
   constructor(title, description, price, thumbnail, code, stock) {
-    this.id = this.#id;
+    this.id = Product.Id();
     this.title = title;
     this.description = description;
     this.price = price;
@@ -9,47 +9,61 @@ class Product {
     this.stock = stock;
   }
 
-  #id = 1++
+  static Id() {
+    if (!this.latestId) {
+      this.latestId = 1;
+    } else {
+      this.latestId++;
+    }
+    return this.latestId;
+  }
 }
 
-class ProductManager{
-    constructor(){
-        this.products = []
+class ProductManager {
+  constructor() {
+    this.products = [];
+  }
+
+  addProduct(title, description, price, thumbnail, code, stock) {
+    if (!title || !description || !price || !thumbnail || !code || !stock) {
+      console.log(
+        "All fields (title, description, price, thumbnail, code, stock) are required."
+      );
+      return;
     }
 
-    addProducts(title, description, price, thumbnail, code, stock){
-        if (!title || !description || !price || !thumbnail || !code || !stock){
-            return console.log("Faltan Datos")
-        }
-
-        const findProduct = this.products.find(product => product.code === code);
-
-        if(findProduct){
-            return console.log("Un producto con el mismo code, ya exite")
-        }
-
-        const newProduct = new Product(title,description,price,thumbnail,code,stock);
-        this.products.push(newProduct);
-        consolee.log(`El producto: ${title}, a sido agregado`)
+    const existingProduct = this.products.find(
+      (product) => product.code === code
+    );
+    if (existingProduct) {
+      console.log("Un producto con el mismo codigo ya existe");
+      return;
     }
 
-    getProduct(){
-        return console.log(this.products)
-    }
+    const newProduct = new Product(
+      title,
+      description,
+      price,
+      thumbnail,
+      code,
+      stock
+    );
+    this.products.push(newProduct);
+    console.log(`Producto '${newProduct.title}' agregado con exito.`);
+  }
 
-    getProductsById(id){
-        const product = this.products.find(product => product.id === id);
+  getProducts() {
+    return console.log(this.products);
+  }
 
-        if(product){
-            console.log(product)
-        }else{
-            console.log(`Not Found`)
-        }
+  getProductById(id) {
+    const product = this.products.find((product) => product.id === id);
+    if (product) {
+      console.log("Producto Encontrado:", product);
+    } else {
+      console.log("Producto no Encontrado.");
     }
+  }
 }
 
- 
-
-
-
-
+const productManager = new ProductManager();
