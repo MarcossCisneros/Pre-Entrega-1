@@ -1,3 +1,4 @@
+// clase para crear el producto
 class Product {
   constructor(title, description, thumbnail, price, code, stock) {
     this.title = title;
@@ -19,8 +20,10 @@ class Product {
   }
 }
 
+// peticion  de file system
 let fs = require(`fs`);
 
+// clase para gestionar las diferentes acciones disponibles en el array de productos
 class ProductManager {
   constructor() {
     this.products = [];
@@ -29,12 +32,17 @@ class ProductManager {
 
   readProducts() {
     let response = fs.readFileSync(this.patch, "utf-8");
-    return JSON.parse(response);
+
+    if (response) {
+      return JSON.parse(response);
+    } else {
+      return [];
+    }
   }
 
   addProduct(title, description, price, thumbnail, code, stock) {
     if (!title || !description || !price || !thumbnail || !code || !stock) {
-      return "All fields required";
+      return console.log("All fields required");
     }
 
     const data = this.readProducts();
@@ -97,13 +105,4 @@ class ProductManager {
 
 const productManager = new ProductManager();
 
-productManager.updateProduct({
-  title: "compu",
-  description: "gamer",
-  price: 10000,
-  thumbnail: "img",
-  code: 5,
-  stock: 10,
-  id: 2,
-});
-
+productManager.addProduct("title", "description", 20, "img", 10, 4);
