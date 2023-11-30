@@ -1,15 +1,15 @@
 class Product {
-  constructor(title, description, price, thumbnail, code, stock) {
-    this.id = Product.Id();
+  constructor(title, description, thumbnail, price, code, stock) {
     this.title = title;
     this.description = description;
+    this.thumdnail = thumbnail;
     this.price = price;
-    this.thumbnail = thumbnail;
-    this.code = code;
     this.stock = stock;
+    this.code = code;
+    this.id = Product.id();
   }
 
-  static Id() {
+  static id() {
     if (!this.latestId) {
       this.latestId = 1;
     } else {
@@ -19,25 +19,30 @@ class Product {
   }
 }
 
+let fs = require(`fs`);
+
 class ProductManager {
   constructor() {
     this.products = [];
+    this.patch = `./archivos/product.txt`;
+  }
+
+  readProducts() {
+    let response = fs.readFileSync(this.patch, "utf-8");
+    return JSON.parse(response);
   }
 
   addProduct(title, description, price, thumbnail, code, stock) {
     if (!title || !description || !price || !thumbnail || !code || !stock) {
-      console.log(
-        "All fields (title, description, price, thumbnail, code, stock) are required."
-      );
-      return;
+      return "All fields required";
     }
 
-    const existingProduct = this.products.find(
-      (product) => product.code === code
-    );
+    const data = this.readProducts();
+
+    const existingProduct = data.find((prod) => prod.code === code);
+
     if (existingProduct) {
-      console.log("Un producto con el mismo codigo ya existe");
-      return;
+      return "This product are existing";
     }
 
     const newProduct = new Product(
@@ -48,22 +53,57 @@ class ProductManager {
       code,
       stock
     );
+
     this.products.push(newProduct);
-    console.log(`Producto '${newProduct.title}' agregado con exito.`);
+
+    fs.writeFileSync(this.patch, JSON.stringify(this.products));
+    console.log(`El producto fue cargado exitosamente`);
   }
 
-  getProducts() {
-    return console.log(this.products);
-  }
+  getProducts = async () => {
+    const data = await this.readProducts();
+    return console.log(data);
+  };
 
   getProductById(id) {
-    const product = this.products.find((product) => product.id === id);
+    const data = this.readProducts();
+
+    const product = data.find((prod) => prod.id === id);
+
     if (product) {
-      console.log("Producto Encontrado:", product);
+      return product;
     } else {
-      console.log("Producto no Encontrado.");
+      return `El producto no se encontro`;
     }
   }
+
+  deleteProductById(id) {
+    let response = this.readProducts();
+    let prodFilter = response.filter((prod) => prod.id != id);
+
+    fs.writeFileSync(this.patch, JSON.stringify(prodFilter));
+    console.log("Producto eliminado");
+  }
+
+  updateProduct = ({ id, ...product }) => {
+    this.deleteProductById(id);
+
+    let productOld = this.readProducts();
+
+    let prodModified = [{ ...product, id }, ...productOld];
+    fs.writeFileSync(this.patch, JSON.stringify(prodModified));
+  };
 }
 
 const productManager = new ProductManager();
+
+productManager.updateProduct({
+  title: "compu",
+  description: "gamer",
+  price: 10000,
+  thumbnail: "img",
+  code: 5,
+  stock: 10,
+  id: 2,
+});
+
