@@ -27,7 +27,7 @@ let fs = require(`fs`);
 class ProductManager {
   constructor() {
     this.products = [];
-    this.patch = `./archivos/product.txt`;
+    this.patch = `./src/archivos/product.txt`;
   }
 
   readProducts() {
