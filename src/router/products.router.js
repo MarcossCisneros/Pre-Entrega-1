@@ -78,7 +78,7 @@ productsRouter.put("/:pid", async (req, res) => {
       category,
     } = req.body;
 
-    const response = await productManager.updateProduct(id, {
+    const response = await productManager.updateProduct(pid, {
       title,
       description,
       price,

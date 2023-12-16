@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 
 export class ProductManager {
   constructor() {
-    this.path = "./models/products.json";
+    this.path = "src/data/products.json";
     this.products = [];
   }
 
@@ -46,7 +46,7 @@ export class ProductManager {
   };
 
   getProductById = async (id) => {
-    const response = this.getProducts();
+    const response = await this.getProducts();
 
     const product = response.find((prod) => prod.id === id);
 
@@ -62,11 +62,11 @@ export class ProductManager {
     const index = products.findIndex((prod) => prod.id === id);
 
     if (index === -1) {
-      products[index] = { id, ...data };
-      await fs.writeFile(this.path, JSON.stringify(response));
-      return products[index];
-    } else {
       console.log("Producto no encontrado");
+    } else {
+      products[index] = { id, ...data };
+      await fs.writeFile(this.path, JSON.stringify(products));
+      return products[index];
     }
   };
 
@@ -75,10 +75,10 @@ export class ProductManager {
     const index = products.findIndex((prod) => prod.id === id);
 
     if (index === -1) {
+      console.log("Producto no encontrado");
+    } else {
       products.splice(index, 1);
       await fs.writeFile(this.path, JSON.stringify(products));
-    } else {
-      console.log("Producto no encontrado");
     }
   };
 }
